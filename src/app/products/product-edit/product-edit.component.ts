@@ -2,11 +2,15 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { Subscription } from 'rxjs';
+import { Store, select } from '@ngrx/store';
 
 import { Product } from '../product';
 import { ProductService } from '../product.service';
 import { GenericValidator } from '../../shared/generic-validator';
 import { NumberValidators } from '../../shared/number.validator';
+
+import * as fromProduct from '../state/product.reducer';
+import * as productActions from '../state/product.actions';
 
 @Component({
   selector: 'pm-product-edit',
@@ -19,7 +23,6 @@ export class ProductEditComponent implements OnInit, OnDestroy {
   productForm: FormGroup;
 
   product: Product | null;
-  sub: Subscription;
 
   // Use with the generic validation message class
   displayMessage: { [key: string]: string } = {};
@@ -27,7 +30,8 @@ export class ProductEditComponent implements OnInit, OnDestroy {
   private genericValidator: GenericValidator;
 
   constructor(private fb: FormBuilder,
-              private productService: ProductService) {
+              private productService: ProductService,
+              private store: Store<fromProduct.State>) {
 
     // Defines all of the validation messages for the form.
     // These could instead be retrieved from a file or database.
@@ -62,8 +66,8 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     });
 
     // Watch for changes to the currently selected product
-    this.sub = this.productService.selectedProductChanges$.subscribe(
-      selectedProduct => this.displayProduct(selectedProduct)
+    this.store.pipe(select(fromProduct.getCurrentProduct)).subscribe(
+      currentProduct => this.displayProduct(currentProduct)
     );
 
     // Watch for value changes
@@ -73,7 +77,6 @@ export class ProductEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.sub.unsubscribe();
   }
 
   // Also validate on blur
@@ -117,13 +120,13 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     if (this.product && this.product.id) {
       if (confirm(`Really delete the product: ${this.product.productName}?`)) {
         this.productService.deleteProduct(this.product.id).subscribe(
-          () => this.productService.changeSelectedProduct(null),
+          () => this.store.dispatch(new productActions.ClearCurrentProduct),
           (err: any) => this.errorMessage = err.error
         );
       }
     } else {
       // No need to delete, it was never saved
-      this.productService.changeSelectedProduct(null);
+      this.store.dispatch(new productActions.ClearCurrentProduct);
     }
   }
 
@@ -137,12 +140,12 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
         if (p.id === 0) {
           this.productService.createProduct(p).subscribe(
-            product => this.productService.changeSelectedProduct(product),
+            product => this.store.dispatch(new productActions.SetCurrentProduct(product)),
             (err: any) => this.errorMessage = err.error
           );
         } else {
           this.productService.updateProduct(p).subscribe(
-            product => this.productService.changeSelectedProduct(product),
+            product => this.store.dispatch(new productActions.SetCurrentProduct(product)),
             (err: any) => this.errorMessage = err.error
           );
         }

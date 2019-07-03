@@ -1,6 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import { Product } from '../product';
+import { ProductActions, ProductActionTypes } from './product.actions';
 import * as fromRoot from '../../state/app.state';
 
 export interface State extends fromRoot.State {
@@ -36,16 +37,39 @@ export const getProducts = createSelector(
   state => state.products
 );
 
-export function reducer(state = initialState, action): ProductState {
+export function reducer(state = initialState, action: ProductActions): ProductState {
   switch (action.type) {
-    case 'TOOGLE_PRODUCT_CODE':
-        console.log('state: ' + JSON.stringify(state));
-        console.log('showProductCode: ' + action.payload);
+    case ProductActionTypes.ToogleProductCode:
         return {
           ...state,
           showProductCode: action.payload
         };
-      default:
+
+    case ProductActionTypes.SetCurrentProduct:
+    return {
+      ...state,
+      currentProduct : {...action.payload}
+    };
+
+    case ProductActionTypes.ClearCurrentProduct:
+    return {
+      ...state,
+      currentProduct: null
+    };
+
+    case ProductActionTypes.InitializeCurrentProduct:
+    return {
+      ...state,
+      currentProduct: {
+        id: 0,
+        productName: '',
+        productCode: 'New',
+        description: '',
+        starRating: 0
+      }
+    };
+
+    default:
         return state;
   }
 }
