@@ -20,6 +20,8 @@ import { PageNotFoundComponent } from './home/page-not-found.component';
 
 /* Feature Modules */
 import { UserModule } from './user/user.module';
+//import { reducer as productsReducer } from './products/state/product.reducer';
+//import { reducer as userReducer } from './user/state/user.reducer';
 
 @NgModule({
   imports: [

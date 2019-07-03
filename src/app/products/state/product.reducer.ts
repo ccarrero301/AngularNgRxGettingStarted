@@ -17,7 +17,7 @@ const initialState: ProductState = {
   showProductCode: true,
   currentProduct: null,
   products: []
-}
+};
 
 const getProductFeatureState = createFeatureSelector<ProductState>('products');
 
@@ -39,6 +39,8 @@ export const getProducts = createSelector(
 export function reducer(state = initialState, action): ProductState {
   switch (action.type) {
     case 'TOOGLE_PRODUCT_CODE':
+        console.log('state: ' + JSON.stringify(state));
+        console.log('showProductCode: ' + action.payload);
         return {
           ...state,
           showProductCode: action.payload
