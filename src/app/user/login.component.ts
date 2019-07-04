@@ -6,7 +6,9 @@ import { Store, select } from '@ngrx/store';
 
 import { AuthService } from './auth.service';
 import { State } from '../state/app.state';
-import { getMaskUserName } from './state/user.reducer';
+
+import * as fromUsers from '../user/state/user.reducer';
+import * as userActions from '../user/state/user.actions';
 
 @Component({
   templateUrl: './login.component.html',
@@ -24,7 +26,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.pipe(select(getMaskUserName)).subscribe(
+    this.store.pipe(select(fromUsers.getMaskUserName)).subscribe(
       (maskUserName) => this.maskUserName = maskUserName);
   }
 
@@ -33,10 +35,7 @@ export class LoginComponent implements OnInit {
   }
 
   checkChanged(value: boolean): void {
-    this.store.dispatch({
-      type: 'TOOGLE_MASK_USER_NAME',
-      payload: value
-    });
+    this.store.dispatch(new userActions.ToogleMaskUserName(value));
   }
 
   login(loginForm: NgForm): void {
