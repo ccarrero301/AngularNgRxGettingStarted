@@ -24,7 +24,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
   products: Product[];
 
   componentActive = true;
+
   products$: Observable<Product[]>;
+  errorMessage$: Observable<string>;
+
 
   // Used to highlight the selected product in the list
   selectedProduct: Product | null;
@@ -37,6 +40,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
       currentProduct => this.selectedProduct = currentProduct
     );
 
+    this.errorMessage$ = this.store.pipe(select(fromProduct.getError));
     this.store.dispatch(new productActions.Load());
 
     this.products$ = this.store.pipe(select(fromProduct.getProducts));
