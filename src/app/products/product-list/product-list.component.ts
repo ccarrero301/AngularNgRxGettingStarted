@@ -28,7 +28,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
   products$: Observable<Product[]>;
   errorMessage$: Observable<string>;
 
-
   // Used to highlight the selected product in the list
   selectedProduct: Product | null;
   constructor(
@@ -36,21 +35,18 @@ export class ProductListComponent implements OnInit, OnDestroy {
     private productService: ProductService) { }
 
   ngOnInit(): void {
-    this.store.pipe(select(fromProduct.getCurrentProduct)).subscribe(
-      currentProduct => this.selectedProduct = currentProduct
-    );
+    this.store.pipe(select(fromProduct.getCurrentProduct),
+                    takeWhile(() => this.componentActive))
+                .subscribe(currentProduct => this.selectedProduct = currentProduct);
 
     this.errorMessage$ = this.store.pipe(select(fromProduct.getError));
     this.store.dispatch(new productActions.Load());
 
     this.products$ = this.store.pipe(select(fromProduct.getProducts));
 
-    // this.store.pipe(select(fromProduct.getProducts),
-    //                 takeWhile(() => this.componentActive))
-    //   .subscribe((products: Product[]) => this.products = products);
-
-    this.store.pipe(select(fromProduct.getShowProductCode)).subscribe(
-      (showProductCode) => this.displayCode = showProductCode);
+    this.store.pipe(select(fromProduct.getShowProductCode),
+                    takeWhile(() => this.componentActive))
+                .subscribe((showProductCode) => this.displayCode = showProductCode);
   }
 
   ngOnDestroy(): void {
@@ -68,5 +64,4 @@ export class ProductListComponent implements OnInit, OnDestroy {
   productSelected(product: Product): void {
     this.store.dispatch(new productActions.SetCurrentProduct(product));
   }
-
 }
