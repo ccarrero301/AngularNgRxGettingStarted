@@ -4,6 +4,8 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+
 import { environment } from '../environments/environment';
 
 // Imports for loading & configuring the in-memory web api
@@ -20,8 +22,6 @@ import { PageNotFoundComponent } from './home/page-not-found.component';
 
 /* Feature Modules */
 import { UserModule } from './user/user.module';
-//import { reducer as productsReducer } from './products/state/product.reducer';
-//import { reducer as userReducer } from './user/state/user.reducer';
 
 @NgModule({
   imports: [
@@ -31,6 +31,7 @@ import { UserModule } from './user/user.module';
     UserModule,
     AppRoutingModule,
     StoreModule.forRoot({}),
+    EffectsModule.forRoot([]),
     StoreDevtoolsModule.instrument({
       name: 'APM Demo App DevTools',
       maxAge: 25,
