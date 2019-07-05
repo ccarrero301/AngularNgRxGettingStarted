@@ -54,11 +54,27 @@ export class ProductEffects {
     )
   );
 
+  @Effect()
+  deleteProducts$: Observable<Action> = this.actions$.pipe(
+    ofType(productActions.ProductActionTypes.DeleteProduct),
+    map((action: productActions.DeleteProduct) => action.payload),
+    mergeMap((productId: number) =>
+      this.DeleteProduct$(productId).pipe(
+        map(() => (new productActions.DeleteProductSuccess())),
+        catchError(err => of(new productActions.DeleteProductFail(err)))
+      )
+    )
+  );
+
   private UpdateProduct$(productToUpdate: Product): Observable<Product> {
     return this.productService.updateProduct(productToUpdate);
   }
 
   private CreateProduct$(productToUpdate: Product): Observable<Product> {
     return this.productService.createProduct(productToUpdate);
+  }
+
+  private DeleteProduct$(productToDeleteId: number): Observable<{}> {
+    return this.productService.deleteProduct(productToDeleteId);
   }
 }
