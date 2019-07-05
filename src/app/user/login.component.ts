@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { Store, select } from '@ngrx/store';
 import { takeWhile } from 'rxjs/operators';
 
 import { AuthService } from './auth.service';
-import { State } from '../state/app.state';
 
-import * as fromUsers from '../user/state/user.reducer';
-import * as userActions from '../user/state/user.actions';
+import * as fromRoot from '../state/app.state';
+import * as fromUsers from './state';
+import * as userActions from './state/user.actions';
 
 @Component({
   templateUrl: './login.component.html',
@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(private authService: AuthService,
               private router: Router,
-              private store: Store<State>) {
+              private store: Store<fromRoot.State>) {
   }
 
   ngOnInit(): void {
