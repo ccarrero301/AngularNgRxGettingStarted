@@ -8,7 +8,7 @@ import { Action } from '@ngrx/store';
 import { Product } from '../product';
 import { ProductService } from '../product.service';
 
-import * as prodcutActions from './product.actions';
+import * as productActions from './product.actions';
 
 @Injectable()
 export class ProductEffects {
@@ -21,28 +21,44 @@ export class ProductEffects {
 
   @Effect()
   loadProducts$: Observable<Action> = this.actions$.pipe(
-    ofType(prodcutActions.ProductActionTypes.Load),
+    ofType(productActions.ProductActionTypes.Load),
     mergeMap(() =>
       this.getProducts$.pipe(
-        map((products) => (new prodcutActions.LoadSuccess(products))),
-        catchError(err => of(new prodcutActions.LoadFail(err)))
+        map((products) => (new productActions.LoadSuccess(products))),
+        catchError(err => of(new productActions.LoadFail(err)))
       )
     )
   );
 
   @Effect()
   updateProducts$: Observable<Action> = this.actions$.pipe(
-    ofType(prodcutActions.ProductActionTypes.UpdateProduct),
-    map((action: prodcutActions.UpdateProduct) => action.payload),
+    ofType(productActions.ProductActionTypes.UpdateProduct),
+    map((action: productActions.UpdateProduct) => action.payload),
     mergeMap((product: Product) =>
       this.UpdateProduct$(product).pipe(
-        map(updatedProduct => (new prodcutActions.UpdateProductSuccess(updatedProduct))),
-        catchError(err => of(new prodcutActions.UpdateProductFail(err)))
+        map(updatedProduct => (new productActions.UpdateProductSuccess(updatedProduct))),
+        catchError(err => of(new productActions.UpdateProductFail(err)))
+      )
+    )
+  );
+
+  @Effect()
+  createProducts$: Observable<Action> = this.actions$.pipe(
+    ofType(productActions.ProductActionTypes.CreateProduct),
+    map((action: productActions.CreateProduct) => action.payload),
+    mergeMap((product: Product) =>
+      this.CreateProduct$(product).pipe(
+        map(createdProduct => (new productActions.CreateProductSuccess(createdProduct))),
+        catchError(err => of(new productActions.CreateProductFail(err)))
       )
     )
   );
 
   private UpdateProduct$(productToUpdate: Product): Observable<Product> {
     return this.productService.updateProduct(productToUpdate);
+  }
+
+  private CreateProduct$(productToUpdate: Product): Observable<Product> {
+    return this.productService.createProduct(productToUpdate);
   }
 }
